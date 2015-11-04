@@ -4,6 +4,10 @@
       "lua":{
           "ui":[
               "/Users/jiasy/Documents/develop/uiCoder/cocosLuaSample"
+          ]        
+          ,
+          "server":[
+              "/Users/jiasy/Documents/develop/testGameServer"
           ]
       }
     }
