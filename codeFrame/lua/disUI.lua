@@ -19,6 +19,11 @@ function disUI:ctor(params_)
 	self.uiStates=nil
     self.displayCreated=false
    	self.displayClass=nil
+
+   	--显示对象
+   	self.displayList={}--所有承载的显示对象
+	self.uiList={}--继承自DisUI的对象，只用于UI用
+	self.disBaseList={}--继承自DisUI的对象，非UI用。FrameSprite，Btn之类的
 end
 --init--------------------------------------------------------
 function disUI:init(initDict_)
@@ -28,6 +33,13 @@ function disUI:init(initDict_)
     --Analyse special params
     self:specialDes()
 end
+
+--layerType == item时才有用
+function disUI:setItemIndex(itemIndex_)
+	self.initDict.itemIndex=itemIndex_
+	self.name="item"..itemIndex_
+end
+
 --预设状态切换的缓动效果。
 function disUI:stateAniPreset(stateName_,aniBool_,aniTime_,aniEaseType_)
 	local _infoObj={}
@@ -223,6 +235,9 @@ function disUI:pes(param_) self.soundControl:playEffectSound(param_) end
 
 --Call when btn click
 function disUI:btnClicked(btnName_,rollName_,listName_,itemDataDict_)
+	if self.layerType == "roll" or self.layerType == "list" or self.layerType == "item" then
+		assert(false,"ERROR roll/list/item 不处理按钮方法")
+	end
     print("-- 按钮点击 --------------------------")
     print("所在界面 : "..self.moduleName.." : "..self.className)
     print("界面名称 : "..self.name)
@@ -269,6 +284,33 @@ function disUI:updateF(type_)
 	end
 end
 
+function disUI:initSubUIs(specialDict_,avoidInit_)
+    for i=1,#self.uiList do
+        local _subUI=self.uiList[i]
+        if specialDict_[_subUI.name] then
+            --初始化，且用自定义数据进行
+            self.uiList:init(specialDict_[self.uiList[i].name])
+        else
+            if avoidInit_[_subUI.name] then
+                --可能在其他时间初始化
+            else
+                --默认情况都会立刻初始化
+                _subUI:init({})
+            end
+        end 
+    end
+    for k,v in pairs(specialDict_) do
+    	if self[k]==nil then
+    		assert(false,"ERROR "..self.moduleName.." : "..self.className.." 中没有名称为 "..k.."的UI")
+    	end
+    end
+    for k,v in pairs(avoidInit_) do
+    	if self[k]==nil then
+    		assert(false,"ERROR "..self.moduleName.." : "..self.className.." 中没有名称为 "..k.."的UI")
+    	end
+    end
+end
+
 --Display children add
 function disUI:childrenAdd()
 	self.displayList={}
@@ -280,7 +322,7 @@ end
 function disUI:childrenRemove()
 	if self.uiList then--ui refers
 	    while #self.uiList>0 do
-	    	local _uiLayer = self.uiList[1]
+	    	local _uiLayer = self.uiList[#self.uiList]
 	    	_uiLayer:onDelete()
 			table.remove(self.uiList)
 	    end
@@ -288,7 +330,7 @@ function disUI:childrenRemove()
 	end
 	if self.disBaseList then--DIY displays refers
 	    while #self.disBaseList>0 do
-	    	local _disBase = self.disBaseList[1]
+	    	local _disBase = self.disBaseList[#self.disBaseList]
 	    	_disBase:onDelete()
 			table.remove(self.disBaseList)
 	    end

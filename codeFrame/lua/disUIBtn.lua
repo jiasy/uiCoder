@@ -23,13 +23,19 @@ function disUIBtn:ctor(params_)
 	self.parentScaleEaseType=32
 	self.controlSelfActionScale=nil
 
+	self.rollParent=nil
+
 	self.currentBtnState=UC_BTNSTATE.UNINITED
-	self:addTouchEventListener()
 end
 
 --init--------------------------------------------------------
-function disUIBtn:init(initDict_)
+function disUIBtn:init(initDict_)--Btn的init一定会在上层init的时候执行
 	disUIBtn.super.init(self,initDict_)
+	self.rollParent=self:getParentUIByLayerType("roll")
+	if self.rollParent==nil then
+		self:addTouchEventListener()
+		table.insert(self.rollParent.btnArr,self)
+	end
 end
 --Special analyse--------------------------------------------------
 function disUIBtn:specialDes()
@@ -156,9 +162,9 @@ end
 --Touch in btn's rects
 function disUIBtn:posInRects(localPos_)
     local _inTouch=false
-    for i=1,#self.rects do
-        if  self.rects[i].x<localPos_.x and (self.rects[i].x+self.rects[i].width)>localPos_.x and self.rects[i].y>localPos_.y and (self.rects[i].y-self.rects[i].height)<localPos_.y then
-            _inTouch=true
+    for _key,_rect in pairs(self.rects) do
+    	if self.mathUtils:pointInRect(localPos_,_rect) then
+			_inTouch=true
             break
         end
     end
@@ -238,6 +244,11 @@ function disUIBtn:onDelete()
 		self.btnGroup:deleteRefer(self)
 	end
 	self.btnGroup=nil
+	if self.rollParent then
+		self.arrayUtils:removeElement(self.rollParent.btnArr,self)
+	end
+	self.rollParent=nil
+	disUIBtn.super.onDelete(self)
 end
 
 return disUIBtn

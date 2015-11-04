@@ -40,6 +40,10 @@ end
 function disBase:getPositionInSelf(position_)
     return self:convertToNodeSpace(position_)
 end
+--Change world position to local
+function disBase:getPositionInWorld(position_)
+    return self:convertToWorldSpace(position_)
+end
 
 --Get ui layer which container this. 
 function disBase:getUiParent()
@@ -74,8 +78,8 @@ function disBase:getParentUIByLayerType(layerType_)
 	end
 end
 
---Whether this ui can be clicked
-function disBase:isTouchAble(touch_)
+--Whether this displayObject can be clicked
+function disBase:isTouchAble()
 	--Didn't show on stage
 	if self:isVisible()==false then return false end
 	--Not create stage
@@ -84,13 +88,6 @@ function disBase:isTouchAble(touch_)
 	if self.uiControl:isWaitZero()==false then return false end
 	--Parent is visible or not.
 	if self:isParentVisible()==false then return false end
-	--Need to check touch position
-	if touch_ then
-		local rollParent=self:getParentUIByLayerType("roll")--check rollLayer's rect
-		if rollParent then
-			--TODO check touch in range
-		end
-	end
 	--check ui structure
 	local _uiParent=self:getUiParent()
 	if self.uiControl:isUiTouchAble(_uiParent) then
