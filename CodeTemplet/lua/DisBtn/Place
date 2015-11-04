@@ -1,0 +1,23 @@
+referUI_.${insName}=ccui.Button:create("${up}", "${down}","${lock}")
+referUI_.${insName}.name="${insName}"
+[< ${ut}|du:setBtnText(referUI_.${insName},lu:tansWord("${ut}"),du.ttfConfig.fontFilePath,${utfs},"${utxa}",cc.c3b(${utcr}, ${utcg}, ${utcb}))|>]
+[< ${dt}|--du:setBtnText(referUI_.${insName},lu:tansWord("${dt}"),du.ttfConfig.fontFilePath,${dtfs},"${dtxa}",cc.c3b(${dtcr}, ${dtcg}, ${dtcb}))|>]
+[< ${lt}|--du:setBtnText(referUI_.${insName},lu:tansWord("${lt}"),du.ttfConfig.fontFilePath,${ltfs},"${ltxa}",cc.c3b(${ltcr}, ${ltcg}, ${ltcb}))|>]
+[<${inMC}|mcControl:getInstance():addMcObjectToContainer(referUI_.${insName},container_,${ax},${ay},${bf},${ef},{{${pxs}},{${pys}},{${rs}},{${sxs}},{${sys}},{${as}},{${ctrs}},{${ctgs}},{${ctbs}}},${index})|du:placeAndAddChildToContainer(referUI_.${insName},container_,${ax},${ay},${px},${py},${r},${sx},${sy},${a},${index})>]
+referUI_.${insName}:addClickEventListener(
+	function(sender) 
+		if referUI_:isTouchAble()==false then return end
+		if referUI_.${insName}:isVisible()==false then return end
+		if referUI_:getParentUIByLayerType("roll") then assert(false,"disBtn cann't contains by rollLayer.") end
+		referUI_:btnClicked("${insName}")
+		[< ${insName} has btn_act_ |uc:doUIOperationByInfo(uc:specialBtnAnalyse("${insName}"))| >]         act_xx to call a special active
+		[< ${insName} has btn_jumpTo_ |uc:doUIOperationByInfo(uc:specialBtnAnalyse("${insName}"))| >]         jump ui
+		[< ${insName} has btn_popOverlay_ |uc:doUIOperationByInfo(uc:specialBtnAnalyse("${insName}"))| >]   layer overlay in Pop
+		[< ${insName} has btn_baseOverlay_ |uc:doUIOperationByInfo(uc:specialBtnAnalyse("${insName}"))| >]  layer overlay in Base
+		[< ${insName} has btn_overlay_ |uc:doUIOperationByInfo(uc:specialBtnAnalyse("${insName}"))| >]      layer overlay in Base
+		[< ${insName} == btn_close |uc:doUIOperationByInfo(uc:specialBtnAnalyse("${insName}"))| >]          close parent
+		[< ${insName} has btn_state_ |uc:doUIOperationByInfo(uc:specialBtnAnalyse("${insName}",false))| >]     ui state change
+	end
+)
+du:setLogicParent(referUI_.${insName},referUI_)
+[< ${ctr}|referUI_.${insName}:setColor(cc.c3b(${ctr},${ctg},${ctb}))|>]         Colortransform

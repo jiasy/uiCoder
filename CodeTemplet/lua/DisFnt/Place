@@ -1,0 +1,6 @@
+referUI_.${insName}=cc.Label:createWithBMFont(lu:tansFnt("${fn}.fnt"),lu:tansWord("${t}"))
+referUI_.${insName}.name="${insName}"
+[<${inMC}|mcControl:getInstance():addMcObjectToContainer(referUI_.${insName},container_,${ax},${ay},${bf},${ef},{{${pxs}},{${pys}},{${rs}},{${sxs}},{${sys}},{${as}},{${ctrs}},{${ctgs}},{${ctbs}}},${index})|du:placeAndAddChildToContainer(referUI_.${insName},container_,${ax},${ay},${px},${py},${r},${sx},${sy},${a},${index})>]
+referUI_.${insName}.isFntText=true
+du:setLogicParent(referUI_.${insName},referUI_)
+[< ${ctr}|referUI_.${insName}:setColor(cc.c3b(${ctr},${ctg},${ctb}))|>]         Colortransform

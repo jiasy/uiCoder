@@ -1,0 +1,1 @@
+referUI_.rects["${rc}"]=cc.rect(${rx},${ry},${rw},${rh})

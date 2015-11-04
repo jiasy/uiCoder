@@ -1,0 +1,4 @@
+referUI_.${insName}=du:createPartical("${particalName}",${positionType})
+referUI_.${insName}.name="${insName}"
+[<${inMC}|mcControl:getInstance():addMcObjectToContainer(referUI_.${insName},container_,${ax},${ay},${bf},${ef},{{${pxs}},{${pys}},{${rs}},{${sxs}},{${sys}},{${as}},{${ctrs}},{${ctgs}},{${ctbs}}},${index})|du:placeAndAddChildToContainer(referUI_.${insName},container_,${ax},${ay},${px},${py},${r},${sx},${sy},${a},${index})>]
+du:setLogicParent(referUI_.${insName},referUI_)

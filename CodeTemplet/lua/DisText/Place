@@ -1,0 +1,13 @@
+du.ttfConfig.fontSize = ${fs}
+[< ${fgx} |du.ttfConfig.outlineSize = ${fgx} |du.ttfConfig.outlineSize = 0 >] flashCS edit mc's GlowFliter 
+[< ${xa} == left   |referUI_.${insName}=cc.Label:createWithTTF(du.ttfConfig, lu:tansWord("${t}"), cc.TEXT_ALIGNMENT_LEFT)| >]     left
+[< ${xa} == center |referUI_.${insName}=cc.Label:createWithTTF(du.ttfConfig, lu:tansWord("${t}"), cc.TEXT_ALIGNMENT_CENTER)| >]   center
+[< ${xa} == right  |referUI_.${insName}=cc.Label:createWithTTF(du.ttfConfig, lu:tansWord("${t}"), cc.TEXT_ALIGNMENT_RIGHT)| >]    right
+referUI_.${insName}.name="${insName}"
+[< ${insName} has instance||referUI_.${insName}:setString("${insName}")>]      set insName to text,when insName didn't contains "instance"
+[< ${fgx} |referUI_.${insName}:enableOutline(cc.c4b(${fgr},${fgg},${fgb},255)) | >]                                  
+du:textSet(referUI_.${insName},${cr},${cg},${cb},${w},${h})
+[<${inMC}|mcControl:getInstance():addMcObjectToContainer(referUI_.${insName},container_,${ax},${ay},${bf},${ef},{{${pxs}},{${pys}},{${rs}},{${sxs}},{${sys}},{${as}},{${ctrs}},{${ctgs}},{${ctbs}}},${index})|du:placeAndAddChildToContainer(referUI_.${insName},container_,${ax},${ay},${px},${py},${r},${sx},${sy},${a},${index})>]
+referUI_.${insName}.isText=true
+du:setLogicParent(referUI_.${insName},referUI_)
+[< ${ctr}|referUI_.${insName}:setColor(cc.c3b(${ctr},${ctg},${ctb}))|>]         Colortransform

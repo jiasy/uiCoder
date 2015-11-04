@@ -1,0 +1,6 @@
+referUI_.${insName}=C_${className}.new();
+referUI_.${insName}.name="${insName}"
+[<${inMC}|mcControl:getInstance():addMcObjectToContainer(referUI_.${insName},container_,${ax},${ay},${bf},${ef},{{${pxs}},{${pys}},{${rs}},{${sxs}},{${sys}},{${as}},{${ctrs}},{${ctgs}},{${ctbs}}},${index})|du:placeAndAddChildToContainer(referUI_.${insName},container_,${ax},${ay},${px},${py},${r},${sx},${sy},${a},${index})>]
+[<${itemNumPerLine}|referUI_.${insName}:setItemInfo("${itemModuleName}","${itemClassName}",${itemNumPerLine},${beignPoX},${beignPoY})|>]
+table.insert(referUI_.uiList,referUI_.${insName})
+du:setLogicParent(referUI_.${insName},referUI_)

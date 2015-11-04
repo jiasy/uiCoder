@@ -1,0 +1,3 @@
+if btnName_=="${insName}" then
+	print("Btn_pressed : "..self.className.." -> ${insName}");----------------------------${insName}
+end
