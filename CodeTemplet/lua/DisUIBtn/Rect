@@ -1,1 +1,1 @@
-referUI_.rects["${rc}"]=cc.rect(${rx},${ry},${rw},${rh})
+table.insert(referUI_.rects,cc.rect(${rx},${ry},${rw},${rh}))

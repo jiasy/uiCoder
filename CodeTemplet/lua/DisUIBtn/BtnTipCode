@@ -1,1 +1,1 @@
-self.${insName}:init({})
+--self.${insName}

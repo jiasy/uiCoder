@@ -16,8 +16,8 @@ end
 function c_${className}:init(initDict_)
     c_${className}.super.init(self,initDict_)
     [<${Init_Array}|-----ui init----------------------------------------------------------| >]
-    [<${Init_Array}|local _specialDict={}--自定义数据初始化子UI| >]
-    [<${Init_Array}|local _avoidInitDict={}--避免在这里进行初始化的UI名称做KEY的字典。| >]
+    local _specialDict={}--自定义数据初始化子UI
+    local _avoidInitDict={}--避免在这里进行初始化的UI名称做KEY的字典。
     [<${Init_Array}|${Init_Array}| >]
     self:initSubUIs(_specialDict,_avoidInitDict)
     -----state init----------------------------------------------------------

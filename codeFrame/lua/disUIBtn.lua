@@ -34,6 +34,7 @@ function disUIBtn:init(initDict_)--Btn的init一定会在上层init的时候执�
 	self.rollParent=self:getParentUIByLayerType("roll")
 	if self.rollParent==nil then
 		self:addTouchEventListener()
+	else
 		table.insert(self.rollParent.btnArr,self)
 	end
 end
@@ -75,10 +76,14 @@ function disUIBtn:onTouchBegan(touch_,event_)
 		return false
 	end
 end
+
 function disUIBtn:onTouchMoved(touch_,event_)
 	local _localPos=self:getPositionInSelf(touch_:getLocation())
 	if self:posInRects(_localPos)==false then
 		self:moveOut()
+		return true
+	else
+		return false
 	end
 end
 
@@ -96,6 +101,7 @@ function disUIBtn:onTouchEnded(touch_,event_)
 		if self.normalCallFunc then self.normalCallFunc() end
 		self:btnClicked()
 	end
+	self.pressing=false
 end
 
 function disUIBtn:btnClicked()
@@ -140,30 +146,29 @@ function disUIBtn:btnActive(isStateBack_)
 		_itemData=_itemParent.initDict
 		_itemParent:btnClicked(self.name,nil,nil,nil)
 	end
-	local _rollParent=self:getParentUIByLayerType("roll")
-	if _rollParent then--在滚动层中
+	if self.rollParent then
 		local _listParent=self:getParentUIByLayerType("list")
 		if _listParent then--在列表中
-			_rollParent.parent:btnClicked(self.name,_rollParent.name,_listParent.name,_itemData)
+			self.rollParent.logicParent:btnClicked(self.name,self.rollParent.name,_listParent.name,_itemData)
 		else
-			_rollParent.parent:btnClicked(self.name,_rollParent.name,"",_itemData)
+			self.rollParent.logicParent:btnClicked(self.name,self.rollParent.name,nil,_itemData)
 		end
 	else--不在直接调用父容器方法
-		self.parent:btnClicked(self.name,nil,nil,nil)
+		self.logicParent:btnClicked(self.name,nil,nil,nil)
 	end
 	--播放音效
 	if self.soundName then
 		--TODO soundplay
 	end
-	--解析按钮名称，尽心界面跳转、状态切换等等操作。
+	--解析按钮名称，进行界面跳转、状态切换等等操作。
 	--这个一定最后执行，上面的调用了父容器处理一些数据，之后调用这个进行跳转
 	self.uiControl:doUIOperationByInfo(self.uiControl:specialBtnAnalyse(self.name),isStateBack_)
 end
 --Touch in btn's rects
 function disUIBtn:posInRects(localPos_)
     local _inTouch=false
-    for _key,_rect in pairs(self.rects) do
-    	if self.mathUtils:pointInRect(localPos_,_rect) then
+    for i=1,#self.rects do
+    	if self.mathUtils:pointInRect(localPos_,self.rects[i]) then
 			_inTouch=true
             break
         end
@@ -176,6 +181,7 @@ function disUIBtn:setSoundName(soundName_)
 	self.soundName=soundName_
 end
 --Change btn's state
+--name with btn_act_scale means it will back to normal Scale
 function disUIBtn:toNormalState(rightNow_)
 	if self.name=="btn_act_scale" and self.currentBtnState~=UC_BTNSTATE.NORMAL then
 		self:parentToScale(1)
@@ -183,6 +189,7 @@ function disUIBtn:toNormalState(rightNow_)
 	self.pressing=false
 	self:toBtnState(UC_BTNSTATE.NORMAL,rightNow_)
 end
+
 function disUIBtn:toPressState(rightNow_)
 	if self.currentBtnState == UC_BTNSTATE.LOCK then return end
 	if self.currentBtnState ~= UC_BTNSTATE.UNINITED then 
@@ -204,21 +211,32 @@ function disUIBtn:toBtnState(state_,rightNow_)
 end
 
 function disUIBtn:parentToScale(scaleTo_)
-	if self.parent == nil then return end
+	if self.logicParent == nil then return end
 	self:clearParentScaleActions()
 	local _scaleAction=nil
+	--[[
+		TODO scale 分x，y两个方向，是【原有scale】* scaleTo_
+			判断【原有scale】的大小。
+				如果没有记录【原有scale】，进行放缩动作，记录【原有scale】
+					同时监听动作结束的事件，在这之后清空记录的【原有scale】大小
+				如果已经有了【原有scale】就不在记录，也不做放缩
+	]]--
+	--父容器放缩
 	_scaleAction=cc.ScaleTo:create(self.parentScaleScaleTime,scaleTo_)
 	_scaleAction = self.actionUtils:easeActionByType(_scaleAction,self.parentScaleEaseType)
 	self.parentScaleAction = _scaleAction
-	self.parent:runAction(self.parentScaleAction)
+	self.logicParent:runAction(self.parentScaleAction)
+	--同时按钮自身反向放缩
+	--保持父容器放缩的同时，自身大小不变。免得手指的位置变到按钮之外。
 	_scaleAction=cc.ScaleTo:create(self.parentScaleScaleTime,1/scaleTo_*self.initScaleX,1/scaleTo_*self.initScaleY)
 	_scaleAction = self.actionUtils:easeActionByType(_scaleAction,self.parentScaleEaseType)
 	self.controlSelfActionScale = _scaleAction
 	self:runAction(self.controlSelfActionScale)
 end
+
 function disUIBtn:clearParentScaleActions()
 	if self.parentScaleAction then
-		self.parent:stopAction(self.parentScaleAction)
+		self.logicParent:stopAction(self.parentScaleAction)
 		self.parentScaleAction = nil
 	end
 	if self.controlSelfActionScale then
@@ -239,6 +257,7 @@ function disUIBtn:onDestory()
 end
 
 function disUIBtn:onDelete()
+	--清理他引起的父容器大小变化
 	self:clearParentScaleActions()
 	if self.btnGroup then
 		self.btnGroup:deleteRefer(self)

@@ -13,33 +13,43 @@ function disUI:ctor(params_)
     --"item"/"title"        		Change this value when List create items and title
     self.layerType="sub"
     self.placeClass=nil
-    self.rects={}
+    self.rects=nil
 	self.currentState=nil
-	self.stateAniSet={}
+	self.stateAniSet=nil
 	self.uiStates=nil
+	self.uiAnis=nil
     self.displayCreated=false
    	self.displayClass=nil
+   	self.hideOtherUi=nil
+   	self.showAni=nil
 
    	--显示对象
-   	self.displayList={}--所有承载的显示对象
-	self.uiList={}--继承自DisUI的对象，只用于UI用
-	self.disBaseList={}--继承自DisUI的对象，非UI用。FrameSprite，Btn之类的
+   	self.displayList=nil--所有承载的显示对象
+	self.uiList=nil--继承自DisUI的对象，只用于UI用
+	self.disBaseList=nil--继承自DisUI的对象，非UI用。FrameSprite，Btn之类的
+	self.uiBtnList=nil--uiBtn
 end
 --init--------------------------------------------------------
 function disUI:init(initDict_)
 	--Create display children.
 	--Get special params.
 	disUI.super.init(self,initDict_)
+	--btn init
+	self:subBtnsInit()
     --Analyse special params
     self:specialDes()
 end
 
+function disUI:subBtnsInit()
+	for i=1,#self.uiBtnList do
+		self.uiBtnList[i]:init({})
+	end
+end
 --layerType == item时才有用
 function disUI:setItemIndex(itemIndex_)
 	self.initDict.itemIndex=itemIndex_
 	self.name="item"..itemIndex_
 end
-
 --预设状态切换的缓动效果。
 function disUI:stateAniPreset(stateName_,aniBool_,aniTime_,aniEaseType_)
 	local _infoObj={}
@@ -51,16 +61,17 @@ end
 --
 function disUI:stateChange(stateName_,rightNow_)
 	local _stateName = stateName_
-	if self[_stateName] then
+	local _state = self:getStateByName(stateName_)
+	if _state then
 		if self.currentState ~= _stateName then
 			self.currentState = _stateName
 			if rightNow_ then
-				self[_stateName]:activate(false)
+				_state:activate(false)
 			else
 				if self.stateAniSet[_stateName]["aniBool"] then--有预设
-					self:toState(_stateName)
+					self:toState(_state)
 				else--没预设
-					self[_stateName]:activate(false)
+					_state:activate(false)
 				end
 			end
 		end
@@ -71,8 +82,27 @@ function disUI:stateChange(stateName_,rightNow_)
 	end
 end
 --
-function disUI:toState(stateName_)
-	self[stateName_]:activate(self.stateAniSet[stateName_]["aniBool"],self.stateAniSet[stateName_]["aniTime"],self.stateAniSet[stateName_]["aniEaseType"])
+function disUI:uiStructureChange()
+	if self.uiList==nil then
+		return
+	end
+	for i=1,#self.uiList do
+		local _tempUi=self.uiList[i]
+		_tempUi:uiStructureChange()
+	end
+end
+--
+function disUI:getStateByName(stateName_)
+	for i=1,#self.uiStates do
+		if self.uiStates[i].stateName==stateName_ then
+			return self.uiStates[i]
+		end
+	end
+end
+--
+function disUI:toState(state_)
+	local _stateAniSet=self.stateAniSet[state_.stateName]
+	state_:activate(_stateAniSet["aniBool"],_stateAniSet["aniTime"],_stateAniSet["aniEaseType"])
 end
 --界面动画入场
 --type_　　　　 方向类型 L左，R右，T上，B下，中间的T是to的意思
@@ -108,10 +138,15 @@ function disUI:uiAnimation(type_,easeType_,time_,aniType_)
 	else
 		animationBegin()
 		_animationEndCallBack = cc.CallFunc:create(animationEnd)
-		if type_ == "M" then
+		if type_ == "MO" then
 			_initPos=self.designPos
 			self:setScaleX(0.01)
 			self:setScaleY(0.01)
+			_action=cc.ScaleTo:create(time_,1)
+		elseif type_ == "MI" then
+			_initPos=self.designPos
+			self:setScaleX(3)
+			self:setScaleY(3)
 			_action=cc.ScaleTo:create(time_,1)
 		else
 			if aniType_=="force" then
@@ -163,7 +198,7 @@ function disUI:animationOut(aniType_)
 
     local function removeFromParentFun()
     	_uc:waitSub()
-    	self:removeFromParent(true)
+    	self:onDelete()
     end
 
 	local _type
@@ -184,13 +219,13 @@ function disUI:animationOut(aniType_)
 		self.removeAnimationEaseType = nil
 		self.removeAnimationTime     = nil
 	end
-	
-	if _type~=nil then
-    	_uc:waitAdd()
 
+	if _type~=nil then
+		_uc:waitAdd()
 		local _reverseAction=nil
-		if _type == "M" then
-			_reverseAction=cc.ScaleTo:create(_time,0.01)
+		if _type == "MI" or type_ == "MO" then
+			self:setVisible(false)
+			_reverseAction=cc.DelayTime:create(0.01)
 		else
 			local _finalPos
 			if aniType_=="force" then
@@ -235,24 +270,32 @@ function disUI:pes(param_) self.soundControl:playEffectSound(param_) end
 
 --Call when btn click
 function disUI:btnClicked(btnName_,rollName_,listName_,itemDataDict_)
-	if self.layerType == "roll" or self.layerType == "list" or self.layerType == "item" then
-		assert(false,"ERROR roll/list/item 不处理按钮方法")
+	if self.layerType == "roll" or self.layerType == "list" then
+		assert(false,"ERROR roll/list 不处理按钮方法")
 	end
     print("-- 按钮点击 --------------------------")
-    print("所在界面 : "..self.moduleName.." : "..self.className)
-    print("界面名称 : "..self.name)
-    if self.parent then
-        print("按钮所在UI是一个子UI，父容器为 : "..self.parent.moduleName.." : "..self.parent.className)
-    end
-    if rollName_ then 
-        print("按钮存在于滚动层中，所在滚动层名 : "..rollName_)
-        if listName_ then
-        	print("按钮存在于列表中，所在列表名 : "..listName_)
-	        if itemDataDict_ then
-	            print("按钮存在于一个item中，需要为 : "..itemDataDict_.itemIndex)
-	        end
+    if self.layerType~="item" then
+    	print("所在界面 : "..self.moduleName.." : "..self.className)
+    	print("界面名称 : "..self.name)
+    	if self.logicParent then
+	        print("按钮所在UI是一个子UI，父容器为 : "..self.logicParent.moduleName.." : "..self.logicParent.className)
 	    end
-    end
+	    if rollName_ then 
+	        print("按钮存在于滚动层中，所在滚动层名 : "..rollName_)
+	        if listName_ then
+	        	print("按钮存在于列表中，所在列表名 : "..listName_)
+		        if itemDataDict_ then
+		            print("按钮存在于一个item中，序号为 : "..itemDataDict_.itemIndex)
+		        end
+		    end
+		    if itemDataDict_ then
+		        print("按钮存在于一个item中，序号为 : "..itemDataDict_.itemIndex)
+		    end
+	    end
+	else
+		print("所在item : "..self.moduleName.." : "..self.className)
+		print("item名称 : "..self.name)
+	end
     print("按钮名 : "..btnName_)
 end
 
@@ -262,6 +305,7 @@ function disUI:specialDes()
 		local _point=self.uiControl.alignModePoints[self.alignMode]
 		if _point then
 			self:setPosition(self:getParent():convertToNodeSpace(self.uiControl.mainContainer:convertToWorldSpace(_point)))
+			self.designPos=self:getPosition()
 		else
 			print('ERROR When Special key is "alignMode" \n    Value noly can be one of "LT"/"T"/"RT"/"LC"/"C"/"R"/"LB"/"B"/"RB"\n    Current value : '..self.alignMode.."\n")
 		end
@@ -284,14 +328,18 @@ function disUI:updateF(type_)
 	end
 end
 
+--根据两个字典初始化
+--specialDict_   需要init里初始化的UI
+--avoidInit_     不需要在init里面初始化的UI
 function disUI:initSubUIs(specialDict_,avoidInit_)
     for i=1,#self.uiList do
         local _subUI=self.uiList[i]
-        if specialDict_[_subUI.name] then
+        local _subUIName=_subUI.name
+        if specialDict_[_subUIName] then
             --初始化，且用自定义数据进行
-            self.uiList:init(specialDict_[self.uiList[i].name])
+            _subUI:init(specialDict_[_subUIName])
         else
-            if avoidInit_[_subUI.name] then
+            if avoidInit_[_subUIName] then
                 --可能在其他时间初始化
             else
                 --默认情况都会立刻初始化
@@ -299,16 +347,24 @@ function disUI:initSubUIs(specialDict_,avoidInit_)
             end
         end 
     end
-    for k,v in pairs(specialDict_) do
-    	if self[k]==nil then
-    		assert(false,"ERROR "..self.moduleName.." : "..self.className.." 中没有名称为 "..k.."的UI")
-    	end
-    end
-    for k,v in pairs(avoidInit_) do
-    	if self[k]==nil then
-    		assert(false,"ERROR "..self.moduleName.." : "..self.className.." 中没有名称为 "..k.."的UI")
-    	end
-    end
+    if specialDict_ then
+	    for k,v in pairs(specialDict_) do
+	    	if self[k]==nil then
+	    		assert(false,"ERROR "..self.moduleName.." : "..self.className.." 中没有名称为 "..k.."的UI")
+	    	end
+	    	if avoidInit_ and avoidInit_[k] then
+	    		assert(false,"ERROR "..self.moduleName.." : "..self.className.." 名为 "..k.."的UI，初始化设置矛盾，既有初始化字典，规避初始化设置中也存在")
+	    	end
+	    end
+	end
+	if avoidInit_ then
+	    for k,v in pairs(avoidInit_) do
+	    	if self[k]==nil then
+	    		assert(false,"ERROR "..self.moduleName.." : "..self.className.." 中没有名称为 "..k.."的UI")
+	    	end
+	    end
+	end
+
 end
 
 --Display children add
@@ -316,6 +372,11 @@ function disUI:childrenAdd()
 	self.displayList={}
 	self.uiList={}--UI displays
 	self.disBaseList={}--DIY displays
+	self.uiBtnList={}--uiBtn
+	self.uiStates={}
+	self.uiAnis={}
+	self.stateAniSet={}
+	self.rects={}
 	self:getDisplayClass():initPlace(self,self)
 end
 --Display children remove
@@ -327,6 +388,12 @@ function disUI:childrenRemove()
 			table.remove(self.uiList)
 	    end
  		self.uiList=nil
+	end
+	if self.uiBtnList then
+		while #self.uiBtnList>0 do
+			table.remove(self.uiBtnList)
+	    end
+ 		self.uiBtnList=nil
 	end
 	if self.disBaseList then--DIY displays refers
 	    while #self.disBaseList>0 do
@@ -377,6 +444,10 @@ function disUI:onDelete()
 		self.uiStates=nil
 		self.stateAniSet=nil
 	end
+	while #self.rects>0 do
+		table.remove(self.rects)
+	end
+	self.rects=nil
 	self.displayClass=nil
 	self:childrenRemove()
 	

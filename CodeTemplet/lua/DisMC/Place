@@ -1,8 +1,10 @@
 referUI_.${insName}=C_${className}.new();
 referUI_.${insName}.name="${insName}"
 [<${inMC}|mcControl:getInstance():addMcObjectToContainer(referUI_.${insName},container_,${ax},${ay},${bf},${ef},{{${pxs}},{${pys}},{${rs}},{${sxs}},{${sys}},{${as}},{${ctrs}},{${ctgs}},{${ctbs}}},${index})|du:placeAndAddChildToContainer(referUI_.${insName},container_,${ax},${ay},${px},${py},${r},${sx},${sy},${a},${index})>]
-table.insert(referUI_.disBaseList,referUI_.${insName})
-table.insert(referUI_.uiBtnList,referUI_.${insName})
+table.insert(referUI_.uiList,referUI_.${insName})
 du:setLogicParent(referUI_.${insName},referUI_)
-[<${maskNumber}|du:createMask(container_,referUI_.${insName},${maskNumber})|>]  If this is a mask
+[<${maskNumber}|local _${insName}Mask={}|>]                                     If this is a mask
+[<${maskNumber}|_${insName}Mask.stencil=referUI_.${insName}|>]
+[<${maskNumber}|_${insName}Mask.maskNumber=${maskNumber}|>]
+[<${maskNumber}|table.insert(_maskInfos,_${insName}Mask)|>]
 [< ${ctr}|referUI_.${insName}:setColor(cc.c3b(${ctr},${ctg},${ctb}))|>]         Colortransform

@@ -125,8 +125,8 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Jump to a ui,clear "Pop" and "Base" container's all layers
 function uiControlInstance:jumpTo(moduleName_,className_)
-    self:containerClear("Base")
-    self:containerClear("Pop")
+    self:containerClear("Base",false,true)
+    self:containerClear("Pop",false,true)
     return self:baseOverlay(moduleName_,className_)
 end
 function uiControlInstance:baseOverlay(moduleName_,className_)
@@ -165,33 +165,49 @@ function uiControlInstance:replaceTopUi(type_,moduleName_,className_)
     self:uiPull(type_)
     return self:uiOverlay(type_,moduleName_,className_)
 end
+
 --Pull a ui from a container.
 function uiControlInstance:uiPull(type_)
-    self:containerClear(type_,true)
+    self:containerClear(type_,true,false)
+    self:uiStructureChange()
 end
 --Push a ui to a container.
 function uiControlInstance:uiOverlay(type_,moduleName_,className_)
-    local _tempLayer=self:getUIByClassName(moduleName_,className_).new()
-    _tempLayer.uiType=type_
-    _tempLayer.name=moduleName_.."_"..className_
-    table.insert(self.arraySet[type_],_tempLayer)
-    self:getContainerByType(type_):addChild(_tempLayer,#self.arraySet,#self.arraySet)
+    local _tempUI=self:getUIByClassName(moduleName_,className_).new()
+    _tempUI.uiType=type_
+    _tempUI.name=moduleName_.."_"..className_
+    table.insert(self.arraySet[type_],_tempUI)
+    self:getContainerByType(type_):addChild(_tempUI,#self.arraySet,#self.arraySet)
     self:uiStructure()--Show ui structure
-    return _tempLayer
+    self:uiStructureChange()
+    return _tempUI
 end
 --Clear layer's container or clear one layer
-function uiControlInstance:containerClear(type_,onlyOne_)
+function uiControlInstance:containerClear(type_,onlyOne_,rightNow_)
     local _tempLayerArr=self:getLayerArrByType(type_)
     local _layerContainer=self:getContainerByType(type_)
     while #_tempLayerArr>0 do
-        local _tempLayer=table.remove(_tempLayerArr)
-        _tempLayer:onDelete()
-        _layerContainer:removeChild(_tempLayer,true)
+        local _tempUI=table.remove(_tempLayerArr)
+        if rightNow_ or  _tempUI:animationOut()==false then
+            self:removeUI(_tempUI)
+        end
+        if rightNow_ then
+            self:removeUI(_tempUI)
+        else
+            
+        end
+
         if onlyOne_ then--Clear only one...
             break;
         end
     end
 end
+
+function uiControlInstance:removeUI(tempUI_)
+    tempUI_:onDelete()
+    tempUI_:removeFromParent(true)
+end
+
 --Get ui's control instance by "moduleName_" and "className_"
 function uiControlInstance:getUIByClassName(moduleName_,className_)
     --local _fullName=moduleName_..className_
@@ -356,6 +372,25 @@ function uiControlInstance:isWaitZero()
         return false
     end
 end
+
+function uiControlInstance:uiStructureChange()
+    self:uiArrStructureChange("Bg")
+    self:uiArrStructureChange("Base")
+    self:uiArrStructureChange("Ui")
+    self:uiArrStructureChange("Pop")
+    self:uiArrStructureChange("Mask")
+    self:uiArrStructureChange("Tip")
+    self:uiArrStructureChange("Loading")
+    self:uiArrStructureChange("Debug")
+end
+function uiControlInstance:uiArrStructureChange(type_)
+    local layerArr=self.arraySet[type_]
+    if layerArr~=nil and #layerArr>0 then
+        for i=#layerArr,1,-1 do 
+            layerArr[i]:uiStructureChange()
+        end
+    end
+end
 --Ui' state change.Ui which has this state will change to it.
 function uiControlInstance:uiStateChange(stateName_)
     self:uiArrStateChange("Bg",stateName_)
@@ -375,7 +410,6 @@ function uiControlInstance:uiArrStateChange(type_,stateName_)
         end
     end
 end
-
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 if UC_DEBUG then

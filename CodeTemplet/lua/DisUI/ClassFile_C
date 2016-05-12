@@ -23,8 +23,8 @@ end
 function c_${className}:init(initDict_)
     c_${className}.super.init(self,initDict_)
     [<${Init_Array}|-----ui init----------------------------------------------------------| >]
-    [<${Init_Array}|local _specialDict={}--自定义数据初始化子UI| >]
-    [<${Init_Array}|local _avoidInitDict={}--避免在这里进行初始化的UI名称做KEY的字典。| >]
+    local _specialDict={}--自定义数据初始化子UI
+    local _avoidInitDict={}--避免在这里进行初始化的UI名称做KEY的字典。
     [<${Init_Array}|${Init_Array}| >]
     self:initSubUIs(_specialDict,_avoidInitDict)
     [<${State_Array}|-----state init----------------------------------------------------------| >]
@@ -32,14 +32,20 @@ function c_${className}:init(initDict_)
     [<${State_Array}|self:stateChange(self.uiStates[1].stateName,true)| >]
     [<${BtnTipCode_Array}|-----btns----------------------------------------------------------| >]
     [<${BtnTipCode_Array}|${BtnTipCode_Array}| >]
-    [<${BtnTipCode_Array}|--btnGroup:initByBtnArr({self.btn1,self.btn2,....})--关联按钮形成按钮组| >]
+    [<${BtnTipCode_Array}|--require("src.app.base.ui.btnGroup").new():initByBtnArr({self.btn1,self.btn2,....})--关联按钮形成按钮组| >]
 end
 
---ui stateChange-------------------------------------
+--ui state change-------------------------------------
 function c_${className}:stateChange(stateName_,rightNow_)
     --Logic here,then change state.
     --判断切换这个状态时候需要的操作，数据整理等等。
     c_${className}.super.stateChange(self,stateName_,rightNow_)
+end
+
+--ui structure change-------------------------------------
+function c_${className}:uiStructureChange()
+    --界面结构变化，需要做的操作。
+    c_${className}.super.uiStructureChange(self)
 end
 
 --btn click call back---------------------------------------------------

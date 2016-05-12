@@ -19,7 +19,7 @@ function displayUtilsInstance:placeAndAddChildToContainer(dis_,container_,ax_,ay
 end
 --Set displayObject's logic parent.
 function displayUtilsInstance:setLogicParent(dis_,logicParent_)
-	dis_.parent=logicParent_--设置逻辑父容器
+	dis_.logicParent=logicParent_--设置逻辑父容器
 	dis_:setCascadeOpacityEnabled(true)
 	table.insert(logicParent_.displayList,dis_)--放入显示列表
 end
@@ -47,6 +47,7 @@ function displayUtilsInstance:place(dis_,px_,py_,r_,sx_,sy_,a_)
 			end
 		elseif a_ <=0.05 and dis_:isVisible() then 
 			dis_:setVisible(false) 
+			dis_:setOpacity(a_*255)--看不到但是透明度的数值需要跟着变
 		end
 	end
 	if dis_:isVisible() then
@@ -56,7 +57,7 @@ function displayUtilsInstance:place(dis_,px_,py_,r_,sx_,sy_,a_)
 			if sx_~=nil then dis_:setScaleX(sx_) end
 			if sy_~=nil then dis_:setScaleY(sy_) end
         end
-        if px_~=nil and py_ ~=nil then print(1) print(px_,py_) dis_:setPosition( cc.p(px_, py_) ) end
+        if px_~=nil and py_ ~=nil then dis_:setPosition( cc.p(px_, py_) ) end
 		if r_~=nil then dis_:setRotation(r_) end
 	end
 end
@@ -112,16 +113,14 @@ end
 --Use "stencil_" create a mask in "container_" to mask childs.
 function displayUtilsInstance:createMask(container_,stencil_,disCount_)
 	local _startIndex=stencil_:getTag()
-	print("_startIndex : ".._startIndex)
 	local _maskContainer=cc.Layer:create()
 	_maskContainer:setPosition(cc.p(0,0))
 	_maskContainer:setAnchorPoint(cc.p(0,0))
 	for _loopIndex=_startIndex-1,(_startIndex-disCount_),-1 do
-		print("_loopIndex : ".._loopIndex)
 		if _loopIndex >0 then
 			local _disPlay=container_:getChildByTag(_loopIndex)
 			_disPlay:retain()
-			stencil_.parent:removeChild(_disPlay)
+			stencil_.logicParent:removeChild(_disPlay)
 			_maskContainer:addChild(_disPlay,_loopIndex,_loopIndex)
 			_disPlay:release()
 		else

@@ -14,9 +14,9 @@ function btnGroup:initByBtnArr(btnArr_)
         end
         self.btnArr[i].btnGroup = self
     end
-    if #self.btnArr>1 then
-        self.btnArr[1]:toPressState(true)
-    end
+    -- if #self.btnArr>1 then
+    --     self.btnArr[1]:toPressState(true)
+    -- end
 end
 --Change btn's state
 function btnGroup:btnToPresseState(btnPress)

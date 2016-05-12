@@ -2,13 +2,13 @@
 local uiState = class("uiState")
 ----------------------------------------------
 --@param data Table {{node, x, y, scaleX, scaleY, rotation, alpha, width, height}, ...}
-function uiState:ctor(host, data)
+function uiState:ctor(host_, data_)
     self.stateName=nil
-    self.host = host
+    self.host = host_
     self.node2prop = {}
     self.scaling = false
-    if data then
-        for _, item in pairs(data) do
+    if data_ then
+        for _, item in pairs(data_) do
             local node = item[1]
             self:register(node, "x", item[2])
             self:register(node, "y", item[3])
@@ -16,8 +16,8 @@ function uiState:ctor(host, data)
             self:register(node, "scaleY", item[5])
             self:register(node, "rotation", item[6])
             self:register(node, "alpha", item[7])
-            self:register(node, "width", item[8])
-            self:register(node, "height", item[9])
+            -- self:register(node, "width", item[8])
+            -- self:register(node, "height", item[9])
         end 
     end
     self.uiControl=uiControl:getInstance()
@@ -25,19 +25,19 @@ function uiState:ctor(host, data)
     self.displayUtils=displayUtils:getInstance()
 end
 
-function uiState:register(node, propName, propValue)
-    local prop = self.node2prop[node]
-    if prop == nil then
-        prop = {}
-        self.node2prop[node] = prop
+function uiState:register(node_, propName_, propValue_)
+    local _prop = self.node2prop[node_]
+    if _prop == nil then
+        _prop = {}
+        self.node2prop[node_] = _prop
     end 
-    prop[propName] = propValue
+    _prop[propName_] = propValue_
 end
 
-function uiState:activate(playAnimation, duration, easeType)
-    if playAnimation == nil then playAnimation = true end
-    duration = duration or 0.3
-    for node, prop in pairs(self.node2prop) do
+function uiState:activate(playAnimation_, duration_, easeType_)
+    if playAnimation_ == nil then playAnimation_ = true end
+    duration_ = duration_ or 0.3
+    for _node, _prop in pairs(self.node2prop) do
         local function moveComplete()
             self.uiControl:waitSub()
         end
@@ -49,139 +49,123 @@ function uiState:activate(playAnimation, duration, easeType)
             self.uiControl:waitSub()
         end
         local function fadeComplete()
-            local alpha = prop["alpha"]
-            if alpha then
-                if alpha < 0.1 then 
-                    visible = false 
+            local _alpha = _prop["alpha"]
+            if _alpha then
+                if _alpha < 0.05 then 
+                    _node.visible = false
                 else 
-                    visible = true
+                    _node.visible = true
                 end
             end
             self.uiControl:waitSub()
         end
 
-        local _x, _y = node:getPosition()
-        local x, y = prop["x"] or _x, prop["y"] or _y
-        --if node.alignBoo then x, y = _x, _y end
+        local _x, _y = _node:getPosition()
+        local _toX, _toY = _prop["x"] or _x, _prop["y"] or _y
+        --if _node.alignBoo then _toX, _toY = _x, _y end
         local _opacitySupport=true
-        if node.isMotionStreak then
+        if _node.isMotionStreak then
             _opacitySupport=false
         end
 
         local _opacity 
-        local opacity 
-        local alpha 
+        local _toOpacity 
+        local _toAlpha 
         if _opacitySupport then
-            _opacity = node:getOpacity()
-            opacity = _opacity
-            alpha = prop["alpha"]
-            if alpha then opacity = 255 * alpha end
+            _opacity = _node:getOpacity()
+            _toOpacity = _opacity
+            _toAlpha = _prop["alpha"]
+            if _toAlpha then _toOpacity = 255 * _toAlpha end
         end
 
         local _scaleX
         local _scaleY
-        local scaleX
-        local scaleY
+        local _toScaleX
+        local _toScaleY
 
-        if node.isSp9==true then
-            local _tempRotationSave=node:getRotation()
-            node:setRotation(0)
-            local _currentSize=node:getContentSize()
-            _scaleX = _currentSize.width/node.sourceWidth
-            _scaleY = _currentSize.height/node.sourceHeight
-            node:setRotation(_tempRotationSave)
-            scaleX = prop["scaleX"] or _scaleX
-            scaleY = prop["scaleY"] or _scaleY
+        if _node.isSp9==true then
+            local _tempRotationSave=_node:getRotation()
+            _node:setRotation(0)
+            local _currentSize=_node:getContentSize()
+            _scaleX = _currentSize.width/_node.sourceWidth
+            _scaleY = _currentSize.height/_node.sourceHeight
+            _node:setRotation(_tempRotationSave)
+            _toScaleX = _prop["scaleX"] or _scaleX
+            _toScaleY = _prop["scaleY"] or _scaleY
         else
-            _scaleX = node:getScaleX()
-            _scaleY = node:getScaleY()
-            scaleX = prop["scaleX"] or _scaleX
-            scaleY = prop["scaleY"] or _scaleY
+            _scaleX = _node:getScaleX()
+            _scaleY = _node:getScaleY()
+            _toScaleX = _prop["scaleX"] or _scaleX
+            _toScaleY = _prop["scaleY"] or _scaleY
         end
 
-        local size = node:getContentSize()
-        local _width= size.width
-        local _height = size.height
-        local width = prop["width"] or _width
-        local height = prop["height"] or _height
+        -- local size = _node:getContentSize()
+        -- local _width= size.width
+        -- local _height = size.height
+        -- local _toWidth = _prop["width"] or _width
+        -- local _toHeight = _prop["height"] or _height
 
-        local _rotation=node:getRotation()
-        local rotation= prop["rotation"] or rotation
+        local _rotation=_node:getRotation()
+        local _toRotation= _prop["rotation"] or _rotation
         
-        if playAnimation then
-            local rotate
-            if math.abs(rotation - _rotation) > 1 then
-                rotate = cc.RotateTo:create(duration,rotation)
-                rotate = self.actionUtils:easeActionByType(rotate, easeType)
-                rotate = cc.Sequence:create(rotate, cc.CallFunc:create(rotateComplete))
-                node:runAction(rotate) 
+        if playAnimation_ then
+            local _rotate
+            if math.abs(_toRotation - _rotation) > 1 then
+                _rotate = cc.RotateTo:create(duration_,_toRotation)
+                _rotate = self.actionUtils:easeActionByType(_rotate, easeType_)
+                _rotate = cc.Sequence:create(_rotate, cc.CallFunc:create(rotateComplete))
+                _node:runAction(_rotate) 
                 self.uiControl:waitAdd()
             end 
 
-            local fade
+            local _fade
             if _opacitySupport then
-                if math.abs(opacity - _opacity) > 1 then
-                    fade = cc.FadeTo:create(duration, opacity)
-                    fade = self.actionUtils:easeActionByType(fade, easeType)
-                    fade = cc.Sequence:create(fade, cc.CallFunc:create(fadeComplete))
-                    node:runAction(fade)
+                if math.abs(_toOpacity - _opacity) > 1 then
+                    _fade = cc.FadeTo:create(duration_, _toOpacity)
+                    _fade = self.actionUtils:easeActionByType(_fade, easeType_)
+                    _fade = cc.Sequence:create(_fade, cc.CallFunc:create(fadeComplete))
+                    _node:runAction(_fade)
                     self.uiControl:waitAdd()
                 end
             end
-            local move
-            if math.abs(x - _x) > 1 or math.abs(y - _y) > 1 then
-                move = cc.MoveTo:create(duration, cc.vertex2F(x, y))
-                move = self.actionUtils:easeActionByType(move, easeType)
-                move = cc.Sequence:create(move, cc.CallFunc:create(moveComplete))
-                node:runAction(move) 
+            local _move
+            if math.abs(_toX - _x) > 1 or math.abs(_toY - _y) > 1 then
+                _move = cc.MoveTo:create(duration_, cc.vertex2F(_toX, _toY))
+                _move = self.actionUtils:easeActionByType(_move, easeType_)
+                _move = cc.Sequence:create(_move, cc.CallFunc:create(moveComplete))
+                _node:runAction(_move) 
                 self.uiControl:waitAdd()
             end 
 
-            local scale
-            if (math.abs(scaleX - _scaleX) > 0.05 or math.abs(scaleY - _scaleY) > 0.05) then
-                scale = cc.ScaleTo:create(duration, scaleX, scaleY)
-                scale = self.actionUtils:easeActionByType(scale, easeType)
-                scale = cc.Sequence:create(scale, cc.CallFunc:create(scaleComplete))
-                if node.isSp9==true then
+            local _scale
+            if (math.abs(_toScaleX - _scaleX) > 0.05 or math.abs(_toScaleY - _scaleY) > 0.05) then
+                _scale = cc.ScaleTo:create(duration_, _toScaleX, _toScaleY)
+                _scale = self.actionUtils:easeActionByType(_scale, easeType_)
+                _scale = cc.Sequence:create(_scale, cc.CallFunc:create(scaleComplete))
+                if _node.isSp9==true then
                     local function update()
                         local size = {}
-                        size.width = node.sourceWidth * node.spriteIn:getScaleX()
-                        size.height = node.sourceHeight * node.spriteIn:getScaleY()
-                        node:setContentSize(size)
-                        if self.scaling then self.actionUtils:nodeDelayCall(node,0.05,update)  end
+                        size.width = _node.sourceWidth * _node.spriteIn:getScaleX()
+                        size.height = _node.sourceHeight * _node.spriteIn:getScaleY()
+                        _node:setContentSize(size)
+                        if self.scaling then
+                            self.actionUtils:nodeDelayCall(_node,0.05,update)
+                        end
                     end
-                    self.actionUtils:nodeDelayCall(node,0.05,update)
-                    node.spriteIn:runAction(scale) 
+                    self.actionUtils:nodeDelayCall(_node,0.05,update)
+                    _node.spriteIn:runAction(_scale) 
                     self.scaling = true
                 else
-                    node:runAction(scale) 
+                    _node:runAction(_scale) 
                 end
                 self.uiControl:waitAdd()
             end        
 
-            if fade or move or scale  then node:setVisible(true) end
+            if _fade or _move or _rotate or _scale  then
+                _node:setVisible(true) 
+            end
         else
-            self.displayUtils:place(node,x,y,rotation,scaleX,scaleY,alpha)
-            -- if node.isSp9==true then
-            --     node:setContentSize(cc.size(node.sourceWidth * scaleX,node.sourceHeight * scaleY))
-            -- else
-            --     node:setScaleX(scaleX)
-            --     node:setScaleY(scaleY)
-            -- end
-            -- node:setPosition(x, y)
-            -- if _opacitySupport then
-            --     node:setOpacity(opacity)
-            -- end
-            -- local alpha = prop["alpha"]
-            -- if alpha then
-            --     if alpha < 0.05 then 
-            --         node:setVisible(false)
-            --     else 
-            --         node:setVisible(true)
-            --     end
-            -- end
-
-            -- node:setRotation(rotation)
+            self.displayUtils:place(_node,_toX,_toY,_toRotation,_toScaleX,_toScaleY,_toAlpha)
         end
     end
 end

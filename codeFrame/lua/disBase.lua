@@ -12,7 +12,7 @@ function disBase:ctor(params_)
     self.moduleName="none"
     self.displayType="none"
     self.lifeState="none"
-	self.parent=nil--logic parent
+	self.logicParent=nil--logic.logicParent
 	self.uiControl=uiControl:getInstance()--refer for uiControl
 	self.soundControl=soundControl:getInstance()--refer for uiControl
 	--utils refers
@@ -51,8 +51,8 @@ function disBase:getUiParent()
 	local _count=0
 	while true do
 		if _currentLayer.uiType=="none" then
-			_currentLayer=self.parent
-		else
+			_currentLayer=_currentLayer.logicParent
+		else--"bg"/"base"/"ui"/"pop"/"mask"/"tip"/"loading"/"debug"/
 			return _currentLayer
 		end
 		_count=_count+1
@@ -64,13 +64,13 @@ function disBase:getParentUIByLayerType(layerType_)
 	local _currentLayer=self
 	while true do
 		if _currentLayer.displayType =="base" then--disBtn/disFs
-			_currentLayer=self.parent
+			_currentLayer=_currentLayer.logicParent
 		else--"ui"
 			if _currentLayer.uiType=="none" then
 				if _currentLayer.layerType ==layerType_ then--"sub"/"ui"/"list"/"roll"/"btn"/"item"/"title"
 					return _currentLayer
 				end
-				_currentLayer=self.parent
+				_currentLayer=_currentLayer.logicParent
 			else--"bg"/"base"/"ui"/"pop"/"mask"/"tip"/"loading"/"debug"/
 				return nil
 			end
@@ -80,6 +80,7 @@ end
 
 --Whether this displayObject can be clicked
 function disBase:isTouchAble()
+	if self:getOpacity()<10 then return false end
 	--Didn't show on stage
 	if self:isVisible()==false then return false end
 	--Not create stage
@@ -104,7 +105,7 @@ function disBase:isParentVisible()
 		if _currentParent:isVisible()==false then
 			return false
 		end
-		_currentParent=_currentParent.parent
+		_currentParent=_currentParent.logicParent
 	end
 	return true
 end
@@ -114,7 +115,7 @@ function disBase:onCreate()
 	if self.lifeState=="none" or self.lifeState=="destory" then
 		self.lifeState="create"
 		self:setVisible(true)
-		self.p=self.parent
+		self.p=self.logicParent
 	elseif self.lifeState=="create" then
 		assert(false, self.moduleName.." : "..self.className.." already create~!")
 	end
@@ -139,7 +140,7 @@ function disBase:onDelete()
 	end
 	self.initDict=nil
 	self.uiControl=nil
-	self.parent=nil
+	self.logicParent=nil
 	--utils refers
 	self.actionUtils=nil
 	self.mathUtils=nil

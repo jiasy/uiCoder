@@ -1,7 +1,6 @@
 [<File_doc|ui|/src/app/ui/places/${moduleName}/p_${className}.lua|replace>]
 [<${Import_Array}|--imports----------------------------------------------------------| >]
 [<${Import_Array}|${Import_Array?}| >]
-local uiState=require("src.app.base.ui.uiState")
 local p_${className} = {}
 
 function p_${className}:initPlace(referUI_,container_)
@@ -9,17 +8,17 @@ function p_${className}:initPlace(referUI_,container_)
 	local lu=languageUtils:getInstance()
 	local uc=uiControl:getInstance()
 	local _maskInfos={}
+	referUI_.totalFrames=${totalFrames}
+	local t=referUI_
+	[<${FrameAction_Array}|--Frame names and frame actions-----------------------------------------| >]
+	[<${FrameAction_Array}|${FrameAction_Array}| >]
+	local _maskInfos={}
 	[<${Place_Array}|--Place all displays----------------------------------------------------------| >]
 	[<${Place_Array}|${Place_Array}| >]
 	while #_maskInfos>0 do
 		local _maskInfo=table.remove(_maskInfos)
 		du:createMask(container_,_maskInfo.stencil,_maskInfo.maskNumber)
 	end
-	[<${State_Array}|--UI state infos----------------------------------------------------------| >]
-    [<${State_Array}|referUI_.uiStates={}| >]
-    [<${State_Array}|local _statePlaceArr=nil| >]
-    [<${State_Array}|${State_Array}| >]
-
     [<${Rect_Array}|-----rect infos----------------------------------------------------------| >]
     [<${Rect_Array}|${Rect_Array}| >]
     self:setSpecial(referUI_)

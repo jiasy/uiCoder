@@ -1,21 +1,11 @@
 {
   "fileCreatePath":{
-    "sample":{
-      "lua":{
-          "ui":[
-              "/Users/jiasy/Documents/develop/uiCoder/cocosLuaSample"
-          ]        
-          ,
-          "server":[
-              "/Users/jiasy/Documents/develop/testGameServer"
-          ]
+    "testGame": {
+      "lua": {
+        "ui": [
+          "/Users/jiasy/Documents/develop/GitRepository/local_lua_uiCoder_create_310"
+        ]
       }
-    }
-  }
-  ,
-  "resourceCopyPath":{
-    "sample":{
-      "lua": "/Users/jiasy/Documents/develop/uiCoder/cocosLuaSample/res"
     }
   }
 }

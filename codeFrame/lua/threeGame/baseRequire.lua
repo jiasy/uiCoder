@@ -15,3 +15,6 @@ require('src.app.base.control.guideControl')
 require('src.app.base.control.netControl')
 require('src.app.base.control.sdkControl')
 require('src.app.base.control.loginControl')
+
+require('src.app.base.util.testUtils')
+require('src.app.base.control.mcControl')

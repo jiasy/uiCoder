@@ -4,9 +4,9 @@ local mathUtilsInstance = class("mathUtilsInstance")
 
 function mathUtilsInstance:pointInRect(point_,rect_)
 	if point_.x > rect_.x then
-		if point_.y > rect_.y then
+		if point_.y < rect_.y then
 			if point_.x < rect_.x+rect_.width then
-				if point_.y < rect_.y+rect_.height then
+				if point_.y > rect_.y-rect_.height then
 					return true
 				end
 			end
