@@ -3,55 +3,55 @@ local disUI=require("src.app.base.ui.disUI")
 local disRoll = class("disRoll",disUI)
 
 function disRoll:ctor(params_)
-	disRoll.super.ctor(self,params_)
-	self.className="disRoll"
-	self.displayType="ui"
-	self.layerType="roll"
-	self.name="none"
+    disRoll.super.ctor(self,params_)
+    self.className="disRoll"
+    self.displayType="ui"
+    self.layerType="roll"
+    self.name="none"
 
-	self.clippingNode=nil--遮罩NODE
-	self.rollContainer=nil--实际显示对象的容器
-	--自己使用的Item 的 itemModuleName/itemClassName
-	self.itemModuleName=nil
-	self.itemClassName=nil
-	self.itemNumPerLine=0--一行放几个
-	self.itemBeginPo=nil--起始的位置
-	
-	self.rollType=""--创建列表的横竖 H/V
-	
-	self.mouseRect=nil--点击区大小位置
-	self.maxHeight=0--滚动层的滚动部分大小，动态变化，根据列表长度
+    self.clippingNode=nil--遮罩NODE
+    self.rollContainer=nil--实际显示对象的容器
+    --自己使用的Item 的 itemModuleName/itemClassName
+    self.itemModuleName=nil
+    self.itemClassName=nil
+    self.itemNumPerLine=0--一行放几个
+    self.itemBeginPo=nil--起始的位置
+    
+    self.rollType=""--创建列表的横竖 H/V
+    
+    self.mouseRect=nil--点击区大小位置
+    self.maxHeight=0--滚动层的滚动部分大小，动态变化，根据列表长度
     self.maxWidth=0
-	self.baseHeight=0--基础的滚动部分大小，这部分在UI编辑器中编辑的
+    self.baseHeight=0--基础的滚动部分大小，这部分在UI编辑器中编辑的
     self.baseWidth=0
-	
-	self.lockEdge="unLock"--边缘锁[拖拽过边缘时的反应]
+    
+    self.lockEdge="unLock"--边缘锁[拖拽过边缘时的反应]
 
-	self.pressing=false--是否点击中
-	
-	self.moved=false--是否移动中
-	
-	self.lockRoll=false--滚动层上锁
-	
-	self.xMoveLong=0--移动了多少距离
+    self.pressing=false--是否点击中
+    
+    self.moved=false--是否移动中
+    
+    self.lockRoll=false--滚动层上锁
+    
+    self.xMoveLong=0--移动了多少距离
     self.yMoveLong=0
-	
-	self.easeing=false--是否正在移动中
-	
-	self.xMousePosArr={}--位置数组
+    
+    self.easeing=false--是否正在移动中
+    
+    self.xMousePosArr={}--位置数组
     self.yMousePosArr={}
     
     self.moveLongMax=10--动了多少算动
     
     self.currentTapingBtn=nil--当前点击的按钮
 
-	self.firstInPosDict=nil--初始化位置
+    self.firstInPosDict=nil--初始化位置
 
-	self.itemArray = nil
-	self.btnArr={}--承载的按钮
+    self.itemArray = nil
+    self.btnArr={}--承载的按钮
 
-	--定时添加
-	self.touchPosDelayTimeAction=nil
+    --定时添加
+    self.touchPosDelayTimeAction=nil
 end
 function disRoll:init(initDict_)
     disRoll.super.init(self,initDict_)
@@ -61,10 +61,10 @@ function disRoll:init(initDict_)
 end
 --列表的情况下获取列表的相关信息
 function disRoll:setItemInfo(itemModuleName_,itemClassName_,itemNumPerLine_,beignPoX_,beignPoY_)
-	self.itemModuleName=itemModuleName_
-	self.itemClassName=itemClassName_
-	self.itemNumPerLine=itemNumPerLine_
-	self.itemBeginPo=cc.p(beignPoX_,beignPoY_)
+    self.itemModuleName=itemModuleName_
+    self.itemClassName=itemClassName_
+    self.itemNumPerLine=itemNumPerLine_
+    self.itemBeginPo=cc.p(beignPoX_,beignPoY_)
 end
 --滚动区设置
 function disRoll:createClippingNodeByRect()
@@ -134,9 +134,9 @@ end
 
 --点击是否在区域内
 function disRoll:tapInRect(localPos_)
-	if self.mathUtils:pointInRect(localPos_,self.mouseRect) then
+    if self.mathUtils:pointInRect(localPos_,self.mouseRect) then
         return true
-	else
+    else
         return false
     end
 end
@@ -154,7 +154,7 @@ end
 
 --开始点击
 function disRoll:onTouchBegan(touch_,event_)
-	if self:isTouchAble()==false then return false end
+    if self:isTouchAble()==false then return false end
     while #self.xMousePosArr>0 do
         table.remove(self.xMousePosArr)
     end
@@ -162,21 +162,21 @@ function disRoll:onTouchBegan(touch_,event_)
         table.remove(self.yMousePosArr)
     end
     local _localPos=self:getPositionInSelf(touch_:getLocation())
-	if self:tapInRect(_localPos) then
-		self:stopEasing()
-		self.pressing=true
-		self.moved=false
-		self.currentTapingBtn=self:getTapBtn(touch_,event_)
-		return true
-	else
-		self.pressing=false
-		return false
-	end
+    if self:tapInRect(_localPos) then
+        self:stopEasing()
+        self.pressing=true
+        self.moved=false
+        self.currentTapingBtn=self:getTapBtn(touch_,event_)
+        return true
+    else
+        self.pressing=false
+        return false
+    end
 end
 
 --移动
 function disRoll:onTouchMoved(touch_,event_)
-	if self.lockRoll then return end
+    if self.lockRoll then return end
     if self.pressing and self.easeing==false then--按下且不在滑动状态中
         self.moved=true--移动状态
 
@@ -230,7 +230,7 @@ function disRoll:onTouchMoved(touch_,event_)
             if self.lockEdge=="unLock" then--边界不上锁，才有意义
                 if _xPos<_xEdge then-- 左方向滑动 - 右超界
                     --TODO 加载元素 --立刻进行
-                else _xPos>_xEdge then-- 右方向滑动 - 左超界
+                elseif _xPos>_xEdge then-- 右方向滑动 - 左超界
                     --TODO 刷新列表 --计时一小段时间 之后做
                 end
             end
@@ -297,8 +297,8 @@ function disRoll:onTouchMoved(touch_,event_)
         end
         --定时添加
         if self.touchPosDelayTimeAction then
-        	self:stopAction(self.touchPosDelayTimeAction)
-        	self.touchPosDelayTimeAction=nil
+            self:stopAction(self.touchPosDelayTimeAction)
+            self.touchPosDelayTimeAction=nil
         end
         local function _callBackFun() self:timeListener() end
         self.touchPosDelayTimeAction=self.actionUtils:nodeDelayCall(self,0.05,_callBackFun)
@@ -307,18 +307,18 @@ end
 
 --时间监听
 function disRoll:timeListener()
-	for i=1,5 do 
-		table.insert(self.xMousePosArr,0)
+    for i=1,5 do 
+        table.insert(self.xMousePosArr,0)
         table.insert(self.yMousePosArr,0)
-	end
-	self.touchPosDelayTimeAction=nil
+    end
+    self.touchPosDelayTimeAction=nil
 end
 
 --结束
 function disRoll:onTouchEnded(touch_,event_)
-	if self.pressing == false or self.easeing then return end
-	if self.moved then
-		self.moved=false
+    if self.pressing == false or self.easeing then return end
+    if self.moved then
+        self.moved=false
         local _xDis,_widthEdge,_xMovePlus,_xEaseXS,xEdgeBeyond=0,0,0,1,false
         if self.rollType == "h" or self.rollType=="x" then
             _widthEdge=self.maxWidth-self.mouseRect.width
@@ -348,21 +348,21 @@ function disRoll:onTouchEnded(touch_,event_)
         local _yDis,_heightEdge,_yMovePlus,_yEaseXS,yEdgeBeyond=0,0,0,1,false
         if self.rollType == "v" or self.rollType=="x" then
             _heightEdge=self.maxHeight-self.mouseRect.height
-    		if _heightEdge >0 then
-    			for i=1,3 do
-    				if self.yMousePosArr[#self.yMousePosArr-i+1] then
-    					_yDis=_yDis+self.yMousePosArr[#self.yMousePosArr-i+1]
-    				end
-    			end
-    			--算缓动的速度
-    			_yMovePlus,_yEaseXS=self:getMoveInfo(_yDis)
+            if _heightEdge >0 then
+                for i=1,3 do
+                    if self.yMousePosArr[#self.yMousePosArr-i+1] then
+                        _yDis=_yDis+self.yMousePosArr[#self.yMousePosArr-i+1]
+                    end
+                end
+                --算缓动的速度
+                _yMovePlus,_yEaseXS=self:getMoveInfo(_yDis)
                 local _yPos=self.rollContainer:getPositionY()+_yMovePlus
                 --if self.rollType~="x" then
                     --计算缓动的距离
                     if _yPos > _heightEdge then
-                    	_yMovePlus=_heightEdge-self.rollContainer:getPositionY()
+                        _yMovePlus=_heightEdge-self.rollContainer:getPositionY()
                     elseif _yPos <0 then
-                    	_yMovePlus=-self.rollContainer:getPositionY()
+                        _yMovePlus=-self.rollContainer:getPositionY()
                     end
                 --end
             else
@@ -465,7 +465,7 @@ function disRoll:moveEnd()
         end
         if _yMove==0 then--没有超界
             for i=1,5 do
-            	table.insert(self.yMousePosArr,0)
+                table.insert(self.yMousePosArr,0)
             end
         end
     end
@@ -478,7 +478,7 @@ end
 
 --开始缓动
 function disRoll:startEasing(xMovePlus_,yMovePlus_,easeX_,easeY_,easeType_)
-	self.easeing=true
+    self.easeing=true
     local _time
     --距离越长，时间越长，比较x跟y那个更长，谁长用谁计算
     if math.abs(xMovePlus_)>math.abs(yMovePlus_) then
@@ -488,15 +488,15 @@ function disRoll:startEasing(xMovePlus_,yMovePlus_,easeX_,easeY_,easeType_)
     end
     _time=math.abs(_time)--取正
 
-	if easeType_=="moveEnd_beyondEdge" then
-		if _time > 0.3 then --超界回弹，时间不要太长
-			_time = 0.3
-		end
-	elseif easeType_=="touchEnd" then
-		if _time >1.5 then --限制运算得到的时间
-			_time=1.5
-		end
-	end
+    if easeType_=="moveEnd_beyondEdge" then
+        if _time > 0.3 then --超界回弹，时间不要太长
+            _time = 0.3
+        end
+    elseif easeType_=="touchEnd" then
+        if _time >1.5 then --限制运算得到的时间
+            _time=1.5
+        end
+    end
     local _moveAction
     if easeType_ == "touchEnd" then
         _moveAction=cc.EaseOut:create(cc.MoveBy:create(_time,cc.p(xMovePlus_,yMovePlus_)),easeX_+easeY_)
@@ -505,7 +505,7 @@ function disRoll:startEasing(xMovePlus_,yMovePlus_,easeX_,easeY_,easeType_)
     end
     local function _callBackFun()
         --时间结束 -- 缓动结束
-		self:easeEnd()
+        self:easeEnd()
     end
     local _easeEnd = cc.CallFunc:create(_callBackFun)
     local _sequence = cc.Sequence:create(_moveAction, _easeEnd)
@@ -516,14 +516,14 @@ end
 
 --手指按下的时候--停止缓动
 function disRoll:stopEasing()
-	if self.easeing then
+    if self.easeing then
         self.easeing=false
         --用tag来索引动作
         self.rollContainer:stopActionByTag(999)
-    	for i=1,5 do
-    		table.insert(self.yMousePosArr,0)
+        for i=1,5 do
+            table.insert(self.yMousePosArr,0)
             table.insert(self.xMousePosArr,0)
-    	end
+        end
     end
 end
 
@@ -534,10 +534,10 @@ end
     超界回弹的缓动结束
 ]]--
 function disRoll:easeEnd()
-	if self.easeing then
-		self.easeing =false
-		self:moveEnd()
-	end
+    if self.easeing then
+        self.easeing =false
+        self:moveEnd()
+    end
 end
 
 --根据不同的类型进行元素排列
@@ -563,8 +563,11 @@ function disRoll:resetItemAndDisplayPlace(type_)
 
     local _needMove=false
     if type_ == "delete" or type_ == "add" or type_ == "update" then
-        _needMove =true
+        _needMove = true
+    elseif type_=="create" then
+        _needMove=false
     else
+        print('type_ : '..type_)
         assert(false,"ERROR resetItemAndDisplayPlace 不在规定之内")
     end
 
@@ -695,7 +698,7 @@ function disRoll:removeItemByIndexs(indexArray_)
     for i=#self.itemArray,1,-1 do
         for j=#indexArray_,1,-1 do
             if self.itemArray[i].dataDict.itemIndex == indexArray_[j] then
-            	self.itemArray[i]:onDelete()
+                self.itemArray[i]:onDelete()
                 self.itemArray[i]:removeFromParent(true)
                 table.remove(self.itemArray,i)
                 table.remove(indexArray_,j)
@@ -718,15 +721,15 @@ end
 --清空元素列表
 function disRoll:clearItems()
     if self.itemArray then--ui refers
-	    while #self.itemArray>0 do
-	    	local _tempItem = self.itemArray[#self.itemArray]
-	    	_tempItem:onDelete()
-			_tempItem:removeFromParent(true)
-			table.remove(self.itemArray)
+        while #self.itemArray>0 do
+            local _tempItem = self.itemArray[#self.itemArray]
+            _tempItem:onDelete()
+            _tempItem:removeFromParent(true)
+            table.remove(self.itemArray)
             self.arrayUtils:removeElement(self.uiList,_tempItem)
-	    end
- 		self.itemArray=nil
-	end
+        end
+        self.itemArray=nil
+    end
 end
 
 -- 创建一个对应于数据的item
@@ -768,17 +771,17 @@ end
 
 --create-- call when init
 function disRoll:onCreate()
-	disRoll.super.onCreate(self)--onCreate中有initPlace摆放位置
+    disRoll.super.onCreate(self)--onCreate中有initPlace摆放位置
     self:createClippingNodeByRect()
     self:getChildrenFirstInPos()
 end
 --destory-- call when removeChild
 function disRoll:onDestory()
-	disRoll.super.onDestory(self)
+    disRoll.super.onDestory(self)
 end
 function disRoll:onDelete()
-	self.currentTapingBtn=nil
-	self.mouseRect=nil
+    self.currentTapingBtn=nil
+    self.mouseRect=nil
     if self.displayList_replace then self.arrayUtils:clearArray(self.displayList_replace) end
     self.arrayUtils:clearArray(self.xMousePosArr)
     self.xMousePosArr=nil
@@ -787,7 +790,7 @@ function disRoll:onDelete()
     self.arrayUtils:clearArray(self.firstInPosDict)
     self.firstInPosDict=nil
     self:clearItems()
-	disRoll.super.onDelete(self)
+    disRoll.super.onDelete(self)
 end
 
 return disRoll
