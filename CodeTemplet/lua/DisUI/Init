@@ -1,3 +1,0 @@
---local _${insName}Dict={}
---_specialDict["${insName}"]= _${insName}Dict
---_avoidInit["${insName}"]="avoidInitHere"

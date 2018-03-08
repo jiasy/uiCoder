@@ -1,7 +1,0 @@
-[<${StateSingle_Array}|---------------------------------------------------------------${stateName}| >]
-[<${StateSingle_Array}|_statePlaceArr={}| >]
-[<${StateSingle_Array}|${StateSingle_Array}| >]
-[<${StateSingle_Array}|referUI_.${stateName} = uiState.new(referUI_,_statePlaceArr)| >]
-[<${StateSingle_Array}|referUI_.${stateName}.stateName="${stateName}"| >]
-[<${StateSingle_Array}|table.insert(referUI_.uiStates,referUI_.${stateName})| >]
-[<${StateSingle_Array}|referUI_:stateAniPreset("${stateName}",true,0.3,53)| >]

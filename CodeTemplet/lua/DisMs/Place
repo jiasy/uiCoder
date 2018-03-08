@@ -1,7 +1,0 @@
-referUI_.${insName}=cc.MotionStreak:create(${pars},cc.c3b(${picr},${picg},${picb}),"${namePath}")
-referUI_.${insName}.name="${insName}"
-referUI_.${insName}.isMotionStreak=true
-[<${inMC}|mcControl:getInstance():addMcObjectToContainer(referUI_.${insName},container_,${ax},${ay},${bf},${ef},{{${pxs}},{${pys}},{${rs}},{${sxs}},{${sys}},{${as}},{${ctrs}},{${ctgs}},{${ctbs}}},${index})|du:placeAndAddChildToContainer(referUI_.${insName},container_,${ax},${ay},${px},${py},${r},${sx},${sy},${a},${index})>]
-du:setLogicParent(referUI_.${insName},referUI_)
-[<${blendMode}|du:setBlendToDisplay(referUI_.${insName},"${blendMode}")|>]      Set blend mode
-[< ${ctr}|referUI_.${insName}:setColor(cc.c3b(${ctr},${ctg},${ctb}))|>]         Colortransform

@@ -1,5 +1,0 @@
-[<${frameName}|referUI_.frameNames[${frameInt}]="${frameName}"|>]
-[<${frameFuncs}|referUI_.frameAction_${frameInt}=function()|>]
-[<${frameFuncs}|	${frameFuncs}|>]
-[<${frameFuncs}|end|>]
-[<${frameFuncs}|referUI_.frameActions[${frameInt}]=referUI_.frameAction_${frameInt}|>]

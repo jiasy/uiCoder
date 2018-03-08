@@ -1,1 +1,0 @@
-table.insert(_statePlaceArr,{referUI_.${name},${px},${py},${sx},${sy},${r},${a}})

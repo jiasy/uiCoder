@@ -1,9 +1,23 @@
 {
   "fileCreatePath":{
-    "testGame": {
+    "游戏名称<Flash 中编辑 游戏名称_模块名_界面名_子UI名 的游戏名称。相同的会按照以下的配置，输出成对应 代码种类 的代码>":{
+      "代码种类<按照指定的种类去找代码模板>":{
+        "ui代码输出位置，可以是多个，直接写到工程里。": [
+          "本地的绝对路径"
+        ]
+      }
+    },
+    "threeGame": {
       "lua": {
         "ui": [
-          "/Users/jiasy/Documents/develop/GitRepository/local_lua_uiCoder_create_310"
+          "/Users/jiasy/Documents/develop/GitRepository/local_lua_uiCoder_create_315/threeGame"
+        ]
+      }
+    },
+    "testGame": {
+      "CocosCreatorJS": {
+        "ui": [
+          "/Users/jiasy/Desktop/uiCoderCocosCreator/assets/Script/uis"
         ]
       }
     }

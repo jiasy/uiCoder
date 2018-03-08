@@ -1,1 +1,0 @@
-table.insert(referUI_.rects,cc.rect(${rx},${ry},${rw},${rh}))
