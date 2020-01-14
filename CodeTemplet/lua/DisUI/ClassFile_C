@@ -1,0 +1,70 @@
+[<File_doc|ui|/src/app/ui/controls/${moduleName}/c_${className}.lua|nothing>]
+[<File_doc|ui|/src/app/ui/controlsReplace/${moduleName}/c_${className}.lua|replace>]
+[<${isUi}|--[[|>]
+[<${isUi}|    调用方式 |>]
+[<${isUi}|        1.模块名[moduleName] + 界面类名[className] 的方式|>]
+[<${isUi}|            local _targetUi=uiControl:getInstance():jumpTo("${moduleName}","${className}")|>]
+[<${isUi}|        2._targetUi在场景中，只有调用 init 才能用。否则只是空层|>]
+[<${isUi}|            _targetUi:init({})|>]
+[<${isUi}|]]|>]
+--class define--------------------------------------------------------
+local C_disUI=require("src.app.base.ui.disUI")
+local c_${className} = class("c_${className}",C_disUI)
+
+--ui create------------------------------------------
+function c_${className}:ctor(params_)
+    c_${className}.super.ctor(self,params_)
+    self.className="${className}"
+    self.moduleName="${moduleName}"
+    [<${isUi}|self.layerType="ui"|>]
+end
+
+--init data and place------------------------------------------
+function c_${className}:init(initDict_)
+    c_${className}.super.init(self,initDict_)
+    [<${Init_Array}|-----ui init----------------------------------------------------------| >]
+    local _specialDict={}--自定义数据初始化子UI
+    local _avoidInitDict={}--避免在这里进行初始化的UI名称做KEY的字典。
+    [<${Init_Array}|${Init_Array}| >]
+    self:initSubUIs(_specialDict,_avoidInitDict)
+    [<${State_Array}|-----state init----------------------------------------------------------| >]
+    [<${State_Array}|-----self:stateAniPreset(stateName,animationMove,lastTime,easeType)--更改动画预设| >]
+    [<${State_Array}|self:stateChange(self.uiStates[1].stateName,true)| >]
+    [<${BtnTipCode_Array}|-----btns----------------------------------------------------------| >]
+    [<${BtnTipCode_Array}|${BtnTipCode_Array}| >]
+    [<${BtnTipCode_Array}|--require("src.app.base.ui.btnGroup").new():initByBtnArr({self.btn1,self.btn2,....})--关联按钮形成按钮组| >]
+end
+
+--ui state change-------------------------------------
+function c_${className}:stateChange(stateName_,rightNow_)
+    --Logic here,then change state.
+    --判断切换这个状态时候需要的操作，数据整理等等。
+    c_${className}.super.stateChange(self,stateName_,rightNow_)
+end
+
+--ui structure change-------------------------------------
+function c_${className}:uiStructureChange()
+    --界面结构变化，需要做的操作。
+    c_${className}.super.uiStructureChange(self)
+end
+
+--btn click call back---------------------------------------------------
+function c_${className}:btnClicked(btnName_,rollName_,listName_,itemDataDict_)
+    c_${className}.super.btnClicked(self,btnName_,rollName_,listName_,itemDataDict_)
+    [<${BtnCheck_Array}|-----check btn name----------------------------------------------------------| >]
+    [<${BtnCheck_Array}|${BtnCheck_Array}| >]
+end
+
+function c_${className}:onCreate()
+    c_${className}.super.onCreate(self)
+    --print(self.moduleName .. " : " .. self.className .. " : " .. "onCreate")
+    --ui add logic here
+end
+
+function c_${className}:onDestory()
+    --ui remove logic here
+    --print(self.moduleName .. " : " .. self.className .. " : " .. "onDestory")
+    c_${className}.super.onDestory(self)
+end
+
+return c_${className}

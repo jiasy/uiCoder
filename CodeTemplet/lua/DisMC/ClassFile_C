@@ -1,0 +1,67 @@
+[<File_doc|ui|/src/app/ui/controls/${moduleName}/c_${className}.lua|nothing>]
+[<File_doc|ui|/src/app/ui/controlsReplace/${moduleName}/c_${className}.lua|replace>]
+[<${isUi}|--[[|>]
+[<${isUi}|    调用方式 |>]
+[<${isUi}|        1.模块名[moduleName] + 界面类名[className] 的方式|>]
+[<${isUi}|            local _targetUi=uiControl:getInstance():jumpTo("${moduleName}","${className}")|>]
+[<${isUi}|        2._targetUi在场景中，只有调用 init 才能用。否则只是空层|>]
+[<${isUi}|            _targetUi:init({})|>]
+[<${isUi}|]]|>]
+--class define--------------------------------------------------------
+local C_disMC=require("src.app.base.ui.disMC")
+local c_${className} = class("c_${className}",C_disMC)
+
+--ui create------------------------------------------
+function c_${className}:ctor(params_)
+    c_${className}.super.ctor(self,params_)
+    self.className="${className}"
+    self.moduleName="${moduleName}"
+    [<${isUi}|self.layerType="ui"|>]
+end
+
+--init data and place------------------------------------------
+function c_${className}:init(initDict_)
+    c_${className}.super.init(self,initDict_)
+    [<${Init_Array}|-----ui init----------------------------------------------------------| >]
+    local _specialDict={}--自定义数据初始化子UI
+    local _avoidInitDict={}--避免在这里进行初始化的UI名称做KEY的字典。
+    [<${Init_Array}|${Init_Array}| >]
+    self:initSubUIs(_specialDict,_avoidInitDict)
+    [<${BtnTipCode_Array}|-----btns----------------------------------------------------------| >]
+    [<${BtnTipCode_Array}|${BtnTipCode_Array}| >]
+    [<${BtnTipCode_Array}|--local _btnGroup=require("src.app.base.ui.btnGroup")--按钮组，要关联起来的按钮。用一下代码来关联。可以关联多组。| >]
+    [<${BtnTipCode_Array}|_btnGroup.new():initByBtnArr({self.btn1,self.btn2,....})| >]
+end
+
+--ui stateChange-------------------------------------
+function c_${className}:stateChange(params_)
+    --Logic here,then change state.
+    c_${className}.super.stateChange(self,params_)
+end
+
+--btn click call back---------------------------------------------------
+function c_${className}:btnClicked(btnName_,rollName_,listName_,itemDataDict_)
+    c_${className}.super.btnClicked(self,btnName_,rollName_,listName_,itemDataDict_)
+    [<${BtnCheck_Array}|-----check btn name----------------------------------------------------------| >]
+    [<${BtnCheck_Array}|${BtnCheck_Array}| >]
+end
+
+--frame name call back----------------------------------------------------- 帧名不要带下杠线
+function c_${className}:onFrameName(frameName_)
+    c_${className}.super.onFrameName(self,frameName_)
+
+end
+
+function c_${className}:onCreate()
+    c_${className}.super.onCreate(self)
+    --print(self.moduleName .. " : " .. self.className .. " : " .. "onCreate")
+    --ui add logic here
+end
+
+function c_${className}:onDestory()
+    --ui remove logic here
+    --print(self.moduleName .. " : " .. self.className .. " : " .. "onDestory")
+    c_${className}.super.onDestory(self)
+end
+
+return c_${className}

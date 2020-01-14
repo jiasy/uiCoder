@@ -1,0 +1,1 @@
+local C_${className} = require("src.app.ui.controls.${moduleName}.c_${className}")
